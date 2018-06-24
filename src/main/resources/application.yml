@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost/springbootdemo
+    username: root
+    password: root
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  messages:
+    basename: i18n/messages,i18n/error-messages
+    encoding: UTF-8
+springbootdemo:
+  email:
+    server: www.qq.com
+    port: 403
