@@ -27,7 +27,6 @@ public class OperationLog extends ManagerEntity {
 
     @JsonBackReference
     @ManyToOne(fetch= FetchType.EAGER)
-    @JoinColumn(name = "message_sid",nullable = false,columnDefinition="BIGINT DEFAULT 0")
     private Message message;
 
     public LocalDateTime getOperationTime() {

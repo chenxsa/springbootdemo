@@ -1,6 +1,7 @@
 package com.xgstudio.springbootdemo.repository;
 
 import com.xgstudio.springbootdemo.SpringbootdemoApplication;
+import com.xgstudio.springbootdemo.entity.Attendee;
 import com.xgstudio.springbootdemo.entity.Message;
 import com.xgstudio.springbootdemo.entity.MessageStatus;
 import org.junit.*;
@@ -26,14 +27,20 @@ public class MessageRepositoryTests {
     @Autowired
     MessageRepository messageJpa;
 
+    @Transactional
+    @Rollback(true)
     @Test
     public void insertTest(){
         Message message=new Message();
         try {
             message.setContext("test message");
             message.setStatus(MessageStatus.SEND);
+            Attendee attendee=new Attendee();
+            attendee.setMessage(message);
+            attendee.setUserEmail("test@qq.com");
+            attendee.setUserName("test");
+            message.getAttendees().add(attendee);
             message=messageJpa.save(message);
-
             Assert.assertTrue(message.getId()>0);
             Assert.assertTrue(messageJpa.count()==1);
         }
@@ -66,6 +73,8 @@ public class MessageRepositoryTests {
         Assert.assertTrue(message.getId() > 0);
         Assert.assertTrue(messageJpa.count() == 1);
         message.setStatus(MessageStatus.SUCCESS);
+
+
         messageJpa.save(message);
         message = messageJpa.findById(message.getId()).get();
         Assert.assertTrue(message.getStatus() == MessageStatus.SUCCESS);

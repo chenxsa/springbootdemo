@@ -421,11 +421,17 @@ java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功�
         ddl-auto:validate        运行程序会校验数据与数据库的字段类型是否相同，不同会报错    
         如果不想通过 hibernate来更新表结构，可以通过 [flyway](https://flywaydb.org/documentation/plugins/springboot) 做数据库结构版本管理
    8. 定义实体、字段、关联   
-        实体都在包entity中，详细见demo源码。  
+        
+        实体都在包entity中，详细见demo源码。 三张表的关系是: demo_message 和  demo_message_attend是主从表, demo_operation_log 有外键字段关联到demo_message
+        
         > 注意事项  :  
         1: 在一对多，多对一的关系中，我们最终需要把实体变成json，会导致死循环，通过注解来解决：@JsonManagedReference，@JsonBackReference   
         2: Mysql 中的字段最好有默认，不要用null，null会带来更大的性能损耗；  
-        3：columnDefinition这个属性可以扩展生成的sql 语句
+        3：columnDefinition这个属性可以扩展生成的sql 语句   
+        
+       在启动程序或者单元时,会自动在数据库中创建表:   
+       ![](md/img/7/2.jpg)  
+       
    9. 实体校验  
         在定义实体的时候,我们可以对实体定义校验，这样数据保存的时候、前端传入到Controller时，spring 会对数据合法性进行校验。如果不正确，会返回所有错误信息。  
         Spring种可以使用java校验框架JSR-303作为实体的校验基础。    
@@ -671,5 +677,133 @@ java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功�
         </dependency>
        ```       
    2. 添加测试用例如下:
-   
+      ``` java
+             /**
+              * @author chenxsa
+              */
+             @RunWith(SpringJUnit4ClassRunner.class)
+             @SpringBootTest(classes = SpringbootdemoApplication.class)
+             @WebAppConfiguration
+             public class MessageControllerTests {
+                 //注入WebApplicationContext
+                 @Autowired
+                 private WebApplicationContext webContext;
+             
+                 private MockMvc mockMvc;
+             
+                 @Autowired
+                 ObjectMapper objectMapper;
+             
+                 @Before
+                 public void setupMockMvc() {
+                     //设置MockMvc
+                      mockMvc = MockMvcBuilders
+                             .webAppContextSetup(webContext)        
+                            // .addFilter(jwtAuthenticationFilter,"/*")
+                             .build();
+                 }
+                 @Transactional
+                 @Rollback(true)
+                 @Test
+                 public void sendTest() throws Exception {
+                     Message message=new Message();
+                     message.setContext("test message");
+                     message.setStatus(MessageStatus.SEND);
+                     Attendee attendee=new Attendee();
+                     attendee.setMessage(message);
+                     attendee.setUserEmail("test@qq.com");
+                     attendee.setUserName("test");
+                     message.getAttendees().add(attendee); 
+                     String json= objectMapper.writeValueAsString(message); 
+                     MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                             .post("/api/demo/v1/messages/send")
+                             .header("auth-user","demo")
+                             .contentType(MediaType.APPLICATION_JSON_UTF8)
+                             .content(json)
+                             .accept(MediaType.APPLICATION_JSON))
+                             .andDo(print())
+                             .andExpect(status().isOk())
+                             .andExpect(jsonPath("$.sid").exists())
+                             .andExpect(jsonPath("$.msg").value("发送成功"))
+                             .andReturn();
+                     json=  mvcResult.getResponse().getContentAsString();
+                      Map<String, String> result=  objectMapper.readValue(json, new TypeReference<HashMap<String, String>>() { });
+                     String sid =  result.get("sid");
+                     mockMvc.perform(MockMvcRequestBuilders
+                             .delete("/api/demo/v1/messages/"+sid)
+                             .header("auth-user","demo")
+                             .contentType(MediaType.APPLICATION_JSON_UTF8)
+                             .content("")
+                             .accept(MediaType.APPLICATION_JSON))
+                             .andDo(print())
+                             .andExpect(status().isOk())
+                             .andReturn(); 
+                 } 
+             }
+
+      ```
+       > 在测试用例开始前,使用MockMvcBuilders构建MockMvc
        
+       > MockMvc 不仅是传递json,所有类型的数据都可以模拟,特别是模拟文件上传下载等比工具测试方便好多.
+         
+       > 使用jsonPath对返回的json进行判断. [jsonpath语法参照](http://goessner.net/articles/JsonPath/index.html#e2)
+       
+       > ObjectMapper是jackson用来序列化和反序列化json的主要对象,spring boot 默认使用jackson
+       
+## 十二. ObjectMapper扩展，处理LocalDate等数据类型
+   
+   Spring boot 默认使用jackson用来序列化和反序列化json,可以替换为fastjson或者gson.  
+   ObjectMapper在处理LocalDate,或者一些自定义类型时,序列化的结果和我们逾期的不一致,那么需要对其进行扩展.  
+   对Spring boot默认的服务,我们可以自定义配置类来扩展新.  
+   代码可参见包config下的WebMvcConfigurationExtendConfig类:
+   
+   ``` java
+               @Configuration
+               public class WebMvcConfigurationExtendConfig extends WebMvcConfigurationSupport { 
+               
+                   @Bean
+                   @Primary
+                   public ObjectMapper getObjectMapper(){
+                       return WebMvcConfigurationExtendConfig.createObjectMapper();
+                   }
+                   
+                    static ObjectMapper objectMapper =null;
+                   
+                       /**
+                        * 返回全局唯一的ObjectMapper
+                        *
+                        * @param
+                        * @return
+                        * @author chenxsa
+                        * @date 2018-5-16 15:38
+                        */
+                       public static ObjectMapper createObjectMapper(){
+                           if (objectMapper ==null) {
+                               synchronized (WebMvcConfigurationExtendConfig.class) {
+                                   if (objectMapper == null) {
+                                       JavaTimeModule javaTimeModule = new JavaTimeModule();
+                                       javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer());
+                                       javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer());
+                                       javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+                                       javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+                                       javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer());
+                                       javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer());
+                                       javaTimeModule.addSerializer(Timestamp.class, new TimestampSerializer());
+                                       javaTimeModule.addDeserializer(Timestamp.class, new TimestampDeserializer());
+                                       objectMapper = Jackson2ObjectMapperBuilder.json()
+                                               .serializationInclusion(JsonInclude.Include.NON_NULL)
+                                               .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                                               .modules(javaTimeModule)
+                                               .build();
+                                   }
+                               }
+                           }
+                           return objectMapper;
+                       }
+                       
+                   
+                }
+   
+   ```   
+   > 这里使用静态函数的方式是因为ObjectMapper需要在一些非服务环境下使用.
+                   

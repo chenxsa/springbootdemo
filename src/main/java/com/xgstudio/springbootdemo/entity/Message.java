@@ -16,7 +16,7 @@ import java.util.List;
  * @author chenxsa
  */
 @Entity
-@Table(name = "demo_message_log")
+@Table(name = "demo_message")
 @MessageValid
 public class Message extends ManagerEntity {
 
@@ -28,10 +28,9 @@ public class Message extends ManagerEntity {
     private String context;
     @Column(name = "status",nullable=false)
     private MessageStatus status;
-
     @JsonManagedReference
-    @OneToMany(cascade=CascadeType.ALL ,fetch=FetchType.LAZY )
-    private List<OperationLog> operationLogs=new ArrayList<OperationLog>();
+    @OneToMany(mappedBy = "message",cascade=CascadeType.ALL ,fetch=FetchType.LAZY )
+    private List<Attendee> attendees=new ArrayList<Attendee>();
 
     public long getSendUserId() {
         return sendUserId;
@@ -57,11 +56,11 @@ public class Message extends ManagerEntity {
         this.status = status;
     }
 
-    public List<OperationLog> getOperationLogs() {
-        return operationLogs;
+    public List<Attendee> getAttendees() {
+        return attendees;
     }
 
-    public void setOperationLogs(List<OperationLog> operationLogs) {
-        this.operationLogs = operationLogs;
+    public void setAttendees(List<Attendee> attendees) {
+        this.attendees = attendees;
     }
 }

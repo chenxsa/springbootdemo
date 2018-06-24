@@ -38,40 +38,6 @@ import java.util.Locale;
  */
 @Configuration
 public class WebMvcConfigurationExtendConfig extends WebMvcConfigurationSupport {
-    @Autowired
-    private MessageSource messageSource;
-
-    @Bean
-    public LocalValidatorFactoryBean validator() {
-        LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-        localValidatorFactoryBean.setValidationMessageSource(messageSource);
-        return localValidatorFactoryBean;
-    }
-
-    /**
-     * 自定义校验器
-     * @return
-     */
-    @Override
-    public org.springframework.validation.Validator getValidator() {
-        return validator();
-    }
-
-    @Bean(name = "encryptorBean")
-    public StringEncryptor stringEncryptor() {
-        PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
-        SimpleStringPBEConfig config = new SimpleStringPBEConfig();
-        config.setPassword("digiwin.dap.middleware");
-        config.setAlgorithm("PBEWithMD5AndDES");
-        config.setKeyObtentionIterations("1000");
-        config.setPoolSize("1");
-        config.setProviderName("SunJCE");
-        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
-        config.setStringOutputType("base64");
-        encryptor.setConfig(config);
-        return encryptor;
-    }
-
 
     @Bean
     @Primary
@@ -113,6 +79,22 @@ public class WebMvcConfigurationExtendConfig extends WebMvcConfigurationSupport 
         return objectMapper;
     }
 
+
+    @Bean(name = "encryptorBean")
+    public StringEncryptor stringEncryptor() {
+        PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
+        SimpleStringPBEConfig config = new SimpleStringPBEConfig();
+        config.setPassword("digiwin.dap.middleware");
+        config.setAlgorithm("PBEWithMD5AndDES");
+        config.setKeyObtentionIterations("1000");
+        config.setPoolSize("1");
+        config.setProviderName("SunJCE");
+        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
+        config.setStringOutputType("base64");
+        encryptor.setConfig(config);
+        return encryptor;
+    }
+
     /**
      * 配置线程池
      * @param configurer
@@ -123,6 +105,26 @@ public class WebMvcConfigurationExtendConfig extends WebMvcConfigurationSupport 
         configurer.registerCallableInterceptors(timeoutInterceptor());
         configurer.setTaskExecutor(threadPoolTaskExecutor());
     }
+
+    @Autowired
+    private MessageSource messageSource;
+
+    @Bean
+    public LocalValidatorFactoryBean validator() {
+        LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+        localValidatorFactoryBean.setValidationMessageSource(messageSource);
+        return localValidatorFactoryBean;
+    }
+
+    /**
+     * 自定义校验器
+     * @return
+     */
+    @Override
+    public org.springframework.validation.Validator getValidator() {
+        return validator();
+    }
+
 
 
     /**
