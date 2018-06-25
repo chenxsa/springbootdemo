@@ -580,15 +580,18 @@ java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功�
                    Assert.assertTrue(message.getStatus() == MessageStatus.SUCCESS);
                }
         ```
-   8. 执行单元测试。
+   8. 执行单元测试。   
+   
       ![](md/img/8/6.jpg)   
    9. 执行单元测试查看覆盖率   
       ![](md/img/8/2.jpg)     
-      查看整体覆盖率：   
+      查看整体覆盖率：    
       ![](md/img/8/3.jpg)      
-      查看项目的文件覆盖情况
+      查看项目的文件覆盖情况  ：
+      
       ![](md/img/8/4.jpg)   
-      查看具体的类的覆盖情况
+      查看具体的类的覆盖情况   ：
+      
       ![](md/img/8/5.jpg)   
     
 ## 九、 数据库连接池扩展：Druid，并监控运行状况      
@@ -755,11 +758,11 @@ java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功�
    Spring boot 默认使用jackson用来序列化和反序列化json,可以替换为fastjson或者gson.  
    ObjectMapper在处理LocalDate,或者一些自定义类型时,序列化的结果和我们逾期的不一致,那么需要对其进行扩展.  
    对Spring boot默认的服务,我们可以自定义配置类来扩展新.  
-   代码可参见包config下的WebMvcConfigurationExtendConfig类:
+   代码可参见包config下的JsonConfig和WebMvcConfigurationExtendConfig类:
    
    ``` java
                @Configuration
-               public class WebMvcConfigurationExtendConfig extends WebMvcConfigurationSupport { 
+               public class JsonConfig { 
                
                    @Bean
                    @Primary
@@ -805,5 +808,7 @@ java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功�
                 }
    
    ```   
-   > 这里使用静态函数的方式是因为ObjectMapper需要在一些非服务环境下使用.
+   > 这里使用静态函数的方式是因为ObjectMapper需要在一些非服务环境下使用.   
+   > 需要重写WebMvcConfigurationExtendConfig中的方法configureMessageConverters，来扩展消息转换器
+   
                    
