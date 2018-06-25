@@ -1,6 +1,7 @@
 package com.xgstudio.springbootdemo.util;
 
 
+import com.xgstudio.springbootdemo.config.JsonConfig;
 import com.xgstudio.springbootdemo.config.WebMvcConfigurationExtendConfig;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +23,7 @@ public class WebUtil {
             return;
         }
          //将实体对象转换为JSON Object转换
-        String json = WebMvcConfigurationExtendConfig.createObjectMapper().writeValueAsString(data);
+        String json = JsonConfig.createObjectMapper().writeValueAsString(data);
         writeHttpResponse(response,json);
     }
 

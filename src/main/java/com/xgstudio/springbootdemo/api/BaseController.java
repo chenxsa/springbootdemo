@@ -1,6 +1,6 @@
 package com.xgstudio.springbootdemo.api;
 
-import com.xgstudio.springbootdemo.api.model.ResponseResult;
+import com.xgstudio.springbootdemo.exception.AppError;
 import com.xgstudio.springbootdemo.util.RestResultGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +18,9 @@ public abstract class BaseController {
      * @param ex
      * @return org.springframework.http.ResponseEntity<com.digiwin.dap.middleware.cmc.AppError>
      */
-    protected ResponseEntity<ResponseResult> handleAppError(Exception ex){
+    protected ResponseEntity<AppError> handleAppError(Exception ex){
         logger.error(ex.getMessage(),ex);
-        return new ResponseEntity<ResponseResult>(RestResultGenerator.genError(ex), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<AppError>(RestResultGenerator.genError(ex), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -29,15 +29,21 @@ public abstract class BaseController {
      * @param message
      * @return org.springframework.http.ResponseEntity<com.digiwin.dap.middleware.cmc.AppError>
      */
-    protected ResponseEntity<ResponseResult> handleAppError(String message){
-        return new ResponseEntity<ResponseResult>(RestResultGenerator.genError(message), HttpStatus.INTERNAL_SERVER_ERROR);
+    protected ResponseEntity<AppError> handleAppError(String message){
+        return new ResponseEntity<AppError>(RestResultGenerator.genError(message), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+    /**
+     * 处理异常函数
+     * @param message
+     * @return org.springframework.http.ResponseEntity<com.digiwin.dap.middleware.cmc.AppError>
+     */
+    protected ResponseEntity<AppError> handleAppError(String message,HttpStatus httpStatus){
+        return new ResponseEntity<AppError>(RestResultGenerator.genError(message), httpStatus);
+    }
     /**
      * 返回数据
      */
-    protected ResponseEntity<ResponseResult> handleResult(Object data){
-        return ResponseEntity.ok(
-                RestResultGenerator.genResult(data));
+    protected ResponseEntity<?> handleResult(Object data){
+        return ResponseEntity.ok(data);
     }
 }
