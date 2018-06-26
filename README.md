@@ -293,8 +293,8 @@ java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功�
     
    1. JPA全称Java Persistence API，是java的**ORM规范**，实现POJO到数据库表映射。提供了：
         * JPA annotations，通过注解定义Entity，字段，以及关系；请参考[实体注解]( http://www.datanucleus.org/products/datanucleus/jpa/annotations.html) 
-        * ORM 通过管理、跟踪Entity，对数据库进行增删改查；
-        * Criteria API， 面向对象查询啊api。 
+        * ORM， 通过管理、跟踪Entity，对数据库进行增删改查；
+        * Criteria API， 面向对象查询的api。 
    2. JPA 是一个标准，Hibernate JPA是JPA的一种底层实现，其他的实现还有TopLink JPA、OpenJPA等。
    而Spring Data JPA是对JPA的实现上再做了一层业务封装，简化使用。目前Spring Data JPA底层还是主要使用Hibernate JPA。
    3.  Spring Data JPA：快速增删改查，分页
