@@ -291,7 +291,7 @@ java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功�
         </dependency>
 ```   
     
-   1. JPA全称Java Persistence API，是java的**ORM规范**，实现POJO到数据库的表。提供了：
+   1. JPA全称Java Persistence API，是java的**ORM规范**，实现POJO到数据库表映射。提供了：
         * JPA annotations，通过注解定义Entity，字段，以及关系；请参考[实体注解]( http://www.datanucleus.org/products/datanucleus/jpa/annotations.html) 
         * ORM 通过管理、跟踪Entity，对数据库进行增删改查；
         * Criteria API， 面向对象查询啊api。 
