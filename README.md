@@ -4,6 +4,7 @@
 2. MariaDB 10.1
 3. IntelliJ IDEA 
 4. Maven 3
+5. chrome看github源码插件[](https://blog.csdn.net/geanwen/article/details/78918477)
 
 ## 目标
 通过代码演示基于spring boot 2.0开发web服务器程序，并以目前了解情况，提供最佳实践，后续持续更新不足之处。
@@ -52,6 +53,9 @@ spring boot非常适合构建web应用程序，有如下优点：
  
 java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功能强大、方便使用。代码质量、快捷键、单元测试、调试查看源码比vs更强大！
 
+强烈推荐2：[github 查看源码插件](https://www.cnblogs.com/softidea/p/7217330.html)：  
+ ![](md/img/1/8.jpg)
+ 
 ## 二、创建项目
 1. 通过spring初始化器来添加项目，File -- New -- Project   
 
