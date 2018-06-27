@@ -806,9 +806,29 @@ java界第一、宇宙第二直追vs的IDE： IntelliJ IDEA， 速度块，功�
                        
                    
                 }
+                
+                
+                /**
+                 * 序列化
+                 * @author chenxsa 
+                 */
+                public class LocalDateSerializer extends JsonSerializer<LocalDate> {
+                    /**
+                     * 将日期变成yyyy-MM-dd
+                     * @param value
+                     * @param gen
+                     * @param serializers
+                     * @throws IOException
+                     */
+                    @Override
+                    public void serialize(LocalDate value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                        gen.writeString(value.format(Constants.DATE_FORMATTER));
+                    }
+                }
    
    ```   
-   > 这里使用静态函数的方式是因为ObjectMapper需要在一些非服务环境下使用.   
+   > 这里使用静态函数的方式是因为ObjectMapper需要在一些非服务环境下使用.  
+ 
    > 需要重写WebMvcConfigurationExtendConfig中的方法configureMessageConverters，来扩展消息转换器
    
-                   
+   > 目前扩展的序列化器在包serializer下。                
