@@ -12,9 +12,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.expression.Lists;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -57,15 +61,21 @@ public class GlobalExceptionHandler {
             StringBuilder builder = new StringBuilder();
             MethodArgumentNotValidException methodArgumentNotValidException = (MethodArgumentNotValidException) e;
             BindingResult result = methodArgumentNotValidException.getBindingResult();
-            final List<FieldError> fieldErrors = result.getFieldErrors();
+            final List<FieldError> fieldErrors = result.getFieldErrors(); 
+            HashMap<String,List<String>> errors=new HashMap<>();
             for (FieldError error : fieldErrors) {
-                builder.append(error.getField() +" : "+ error.getDefaultMessage() + System.getProperty("line.separator"));
+                if ( errors.containsKey(error.getField())){
+                    errors.get(error.getField()).add( error.getDefaultMessage());
+                }else
+                {
+                    List<String> details=new ArrayList<>();
+                    details.add(error.getDefaultMessage());
+                    errors.put(error.getField(),details);
+                }
             }
-            return new ResponseEntity<AppError>(RestResultGenerator.genError(builder.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<AppError>(RestResultGenerator.genError("validate failed",errors), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-//        else  if (e instanceof AccessDeniedException){
-//            return new ResponseEntity<>(RestResultGenerator.genNoAuth(), HttpStatus.FORBIDDEN);
-//        }
+
         else {
             return new ResponseEntity<AppError>(RestResultGenerator.genError(e), HttpStatus.INTERNAL_SERVER_ERROR);
         }

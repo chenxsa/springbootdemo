@@ -1,6 +1,7 @@
 package com.xgstudio.springbootdemo.validator;
 
 import com.xgstudio.springbootdemo.entity.Message;
+import com.xgstudio.springbootdemo.repository.MessageRepository;
 import com.xgstudio.springbootdemo.service.ILocaleMessageSourceService;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -16,27 +17,26 @@ import javax.validation.ConstraintValidatorContext;
  * 消息自定义校验
  * @author chenxsa
  */
-public class MessageValidValidator implements ConstraintValidator<MessageValid, Object> {
+public class MessageValidValidator implements ConstraintValidator<MessageValid, Message> {
 
-//    private ILocaleMessageSourceService localeMessageSourceService;
-//
-//    @Resource
-//    public void setLocaleMessageSourceService(ILocaleMessageSourceService messageSourceService) {
-//        this.localeMessageSourceService = messageSourceService;
-//    }
     @Override
     public void initialize(MessageValid alarmActionValid) {
     }
+    @Autowired
+    MessageRepository messageRepository;
 
     @Override
-    public boolean isValid(Object o, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Message o, ConstraintValidatorContext constraintValidatorContext) {
         String message="";
-        BeanWrapper beanWrapper = new BeanWrapperImpl( o);
+//        BeanWrapper beanWrapper = new BeanWrapperImpl( o);
+//        String context = (String)beanWrapper.getPropertyValue("context");
+//        long id=  (long)beanWrapper.getPropertyValue("id");
+        if ( messageRepository.existsById(o.getId())){
 
-        String context = (String)beanWrapper.getPropertyValue("context");
-        if (!StringUtils.isEmpty(context)){
+        }
+        if (!StringUtils.isEmpty(o.getContext())){
             //todo: 进行业务逻辑判断
-            if ("demo".equals(context)) {
+            if ("demo".equals(o.getContext())) {
                 message = "内容不能demo";
                // message = localeMessageSourceService.getMessage("MESSAGE.ERROR.E00001");
             }

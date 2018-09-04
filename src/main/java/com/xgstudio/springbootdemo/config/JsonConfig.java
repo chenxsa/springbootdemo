@@ -8,7 +8,6 @@ import com.xgstudio.springbootdemo.serializer.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -29,11 +28,11 @@ public class JsonConfig {
 
     @Bean
     @Primary
-    public ObjectMapper getObjectMapper(){
+    public  ObjectMapper getObjectMapper(){
         return JsonConfig.createObjectMapper();
     }
 
-    static ObjectMapper objectMapper =null;
+    static  ObjectMapper objectMapper =null;
 
     /**
      * 返回全局唯一的ObjectMapper
@@ -56,9 +55,11 @@ public class JsonConfig {
                     javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer());
                     javaTimeModule.addSerializer(Timestamp.class, new TimestampSerializer());
                     javaTimeModule.addDeserializer(Timestamp.class, new TimestampDeserializer());
+
                     objectMapper = Jackson2ObjectMapperBuilder.json()
-                            .serializationInclusion(JsonInclude.Include.NON_NULL)
+                            .serializationInclusion(JsonInclude.Include.NON_EMPTY)
                             .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                            .failOnUnknownProperties(false)
                             .modules(javaTimeModule)
                             .build();
                 }
@@ -67,26 +68,15 @@ public class JsonConfig {
         return objectMapper;
     }
 
-    @Bean
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        //设置日期格式
-        mappingJackson2HttpMessageConverter.setObjectMapper(getObjectMapper());
-        //设置中文编码格式
-        List<MediaType> list = new ArrayList<MediaType>();
-        list.add(MediaType.APPLICATION_JSON_UTF8);
-        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(list);
-        return mappingJackson2HttpMessageConverter;
-    }
-
 
     @Bean
     public RestTemplate createRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
-        converters.add(mappingJackson2HttpMessageConverter());
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        jsonConverter.setObjectMapper(getObjectMapper());
+        converters.add(jsonConverter);
         restTemplate.setMessageConverters(converters);
         return restTemplate;
     }
-
 }

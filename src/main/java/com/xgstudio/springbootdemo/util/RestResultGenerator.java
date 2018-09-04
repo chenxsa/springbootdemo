@@ -3,6 +3,8 @@ package com.xgstudio.springbootdemo.util;
 import com.xgstudio.springbootdemo.exception.AppError;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+
 /**
  * @author chenxsa
  * @date: 2018-6-8 13:39
@@ -47,6 +49,18 @@ public class RestResultGenerator {
         return result;
     }
 
+    /**
+     *
+     * @param data
+     * @param <T>
+     * @return
+     */
+    public static <T> AppError genError(String message,HashMap data){
+        AppError result = new AppError();
+        result.setMessage(message);
+        result.setData(data);
+        return result;
+    }
 
     /**
      * 没有登陆异常

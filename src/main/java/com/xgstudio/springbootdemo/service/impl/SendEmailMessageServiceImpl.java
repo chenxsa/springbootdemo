@@ -19,14 +19,14 @@ public class SendEmailMessageServiceImpl  implements ISendMessageService {
     @Autowired
     EmailProperties emailProperties;
 
-    /**
-     * 发送消息
-     * @param msg 消息体
-     */
-    @Override
-    public boolean send(Message msg){
-        //todo:发送消息
+        /**
+         * 发送消息
+         * @param msg 消息体
+         */
+        @Override
+        public boolean send(Message msg){
+            //todo:发送消息
 
-        return true;
+            return true;
     }
 }

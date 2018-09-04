@@ -2,6 +2,8 @@ package com.xgstudio.springbootdemo.exception;
 
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+
 /**
  * 错误信息对象
  * Created by chenzwd on 2018/2/23.
@@ -59,6 +61,15 @@ public class AppError {
     private HttpStatus code;
     private String message;
     private String exceptionDetail;
+    private HashMap data;
+
+    public HashMap getData() {
+        return data;
+    }
+
+    public void setData(HashMap data) {
+        this.data = data;
+    }
 
     public HttpStatus getCode() {
         return code;
